@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/_cortex_lib.sh
+source "$SCRIPT_DIR/_cortex_lib.sh"
+require_db
+
+if [[ $# -lt 1 ]]; then
+  echo "Usage: cortex-search <query>" >&2
+  exit 1
+fi
+
+query="$(sql_escape "$*")"
+like="%$query%"
+project="$(sql_escape "$CORTEX_PROJECT")"
+
+sqlite3 -header -column "$CORTEX_DB" "
+SELECT 'decision' AS type, created_at, summary AS text FROM decisions WHERE project='$project' AND summary LIKE '$like'
+UNION ALL
+SELECT 'lesson' AS type, created_at, summary AS text FROM lessons WHERE project='$project' AND summary LIKE '$like'
+UNION ALL
+SELECT 'message' AS type, created_at, body AS text FROM messages WHERE project='$project' AND body LIKE '$like'
+UNION ALL
+SELECT 'knowledge' AS type, created_at, body AS text FROM knowledge WHERE project='$project' AND body LIKE '$like'
+ORDER BY created_at DESC;
+"

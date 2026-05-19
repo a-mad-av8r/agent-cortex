@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/_cortex_lib.sh
+source "$SCRIPT_DIR/_cortex_lib.sh"
+
+require_sqlite
+if [[ ! -f "$CORTEX_DB" ]]; then
+  echo "FAIL database missing at $CORTEX_DB"
+  exit 1
+fi
+
+for table in agents agent_sessions messages decisions lessons knowledge retention_config; do
+  sqlite3 "$CORTEX_DB" "SELECT 1 FROM $table LIMIT 1;" >/dev/null
+done
+
+echo "OK Agent Cortex local memory is ready"
+echo "DB: $CORTEX_DB"

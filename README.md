@@ -1,29 +1,65 @@
 # agent-cortex
 
-**The complete multi-agent collaboration system — all 7 pieces assembled**
+Operating memory for local AI agent teams.
 
-> 🔜 **Coming Soon** — Part of the [Agent Cortex](https://github.com/a-mad-av8r/agent-cortex) series.
+This is the first public slice of Agent Cortex: a small, runnable memory core for
+recording decisions, lessons, messages, and project knowledge, then bootstrapping
+an agent with the context it needs at the start of a session.
 
----
+It is not the full private Cortex used inside EnGenAI. The goal here is a clean
+baseline that people can clone, inspect, run locally, and extend.
 
-## Piece 7 of 7
+## Quick Start
 
-This repo is part of **Agent Cortex** — an open-source multi-agent collaboration system built for real production use.
+```bash
+git clone https://github.com/a-mad-av8r/agent-cortex
+cd agent-cortex
+cp .env.example .env
+./setup.sh
+./scripts/cortex-diagnose
+./scripts/cortex-log decision "Use local Cortex as operating memory for the launch test"
+./scripts/cortex-bootstrap saul
+./scripts/cortex-search "operating memory"
+```
 
-| Piece | Repo | Status |
-|-------|------|--------|
-| 1. Memory | [agent-memory](https://github.com/a-mad-av8r/agent-memory) | ✅ **Live** |
-| 2. Telepathic Link | [agent-telepathy](https://github.com/a-mad-av8r/agent-telepathy) | 🔜 Coming Soon |
-| 3. Handoffs | [agent-handoffs](https://github.com/a-mad-av8r/agent-handoffs) | 🔜 Coming Soon |
-| 4. Roles | [agent-roles](https://github.com/a-mad-av8r/agent-roles) | 🔜 Coming Soon |
-| 5. Retention | [agent-retention](https://github.com/a-mad-av8r/agent-retention) | 🔜 Coming Soon |
-| 6. Multi-Tool | [agent-multimodel](https://github.com/a-mad-av8r/agent-multimodel) | 🔜 Coming Soon |
-| 7. Full Cortex | [agent-cortex](https://github.com/a-mad-av8r/agent-cortex) | 🔜 Coming Soon |
+The default demo uses SQLite so it works without containers. The schema mirrors
+the same operating-memory shape you would use with Postgres or pgvector in a
+larger system.
 
-⭐ **Start with [Agent Memory](https://github.com/a-mad-av8r/agent-memory)** — it's live and ready to use.
+## What Is Included
+
+- `schema.sql` with agents, sessions, messages, decisions, lessons, knowledge,
+  and retention configuration.
+- `scripts/cortex-bootstrap` for session-start context.
+- `scripts/cortex-log` for recording durable project memory.
+- `scripts/cortex-search` for simple local recall.
+- `scripts/cortex-history`, `scripts/cortex-state`, and `scripts/cortex-diagnose`
+  for inspection and operations.
+- `examples/` and `docs/` showing how this fits a small agent team.
+
+## What Is Deliberately Out
+
+- Telepathy streams and live event awareness.
+- Structured handoff lifecycle.
+- Role enforcement and impact gates.
+- Retention workers beyond the base retention config table.
+- Code graph, knowledge graph, multimodal artifact ingestion, customer data, and
+  internal EnGenAI platform automation.
+
+## Series Map
+
+| Part | Repo | Focus |
+| --- | --- | --- |
+| 1 | [agent-cortex](https://github.com/a-mad-av8r/agent-cortex) | Operating memory core |
+| 2 | [agent-telepathy](https://github.com/a-mad-av8r/agent-telepathy) | Event awareness |
+| 3 | [agent-handoffs](https://github.com/a-mad-av8r/agent-handoffs) | Structured transfer |
+| 4 | [agent-roles](https://github.com/a-mad-av8r/agent-roles) | Role boundaries |
+| 5 | [agent-retention](https://github.com/a-mad-av8r/agent-retention) | Memory lifecycle |
+| 6 | [agent-multimodel](https://github.com/a-mad-av8r/agent-multimodel) | Shared protocol across tools |
 
 ## Author
 
-**Amad Malik** — Founder + CEO/CTO of Adaptech AI Ltd, building EnGenAI ([engenai.app](https://engenai.app)).
+Amad Malik - Founder and CEO/CTO of Adaptech AI Ltd, building EnGenAI
+([engenai.app](https://engenai.app)).
 
-[LinkedIn](https://www.linkedin.com/in/amadmalik/) · [GitHub](https://github.com/a-mad-av8r)
+[LinkedIn](https://www.linkedin.com/in/amadmalik/) | [GitHub](https://github.com/a-mad-av8r)

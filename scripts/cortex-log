@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/_cortex_lib.sh
+source "$SCRIPT_DIR/_cortex_lib.sh"
+require_db
+
+if [[ $# -lt 2 ]]; then
+  echo "Usage: cortex-log <decision|lesson|message|knowledge> <summary>" >&2
+  exit 1
+fi
+
+event_type="$1"
+shift
+summary="$*"
+agent="$(sql_escape "$CORTEX_AGENT")"
+project="$(sql_escape "$CORTEX_PROJECT")"
+body="$(sql_escape "$summary")"
+ensure_agent "$CORTEX_AGENT"
+
+case "$event_type" in
+  decision)
+    sqlite3 "$CORTEX_DB" "INSERT INTO decisions(agent_name, project, summary) VALUES ('$agent', '$project', '$body');"
+    ;;
+  lesson)
+    sqlite3 "$CORTEX_DB" "INSERT INTO lessons(agent_name, project, summary) VALUES ('$agent', '$project', '$body');"
+    ;;
+  message)
+    sqlite3 "$CORTEX_DB" "INSERT INTO messages(agent_name, project, body) VALUES ('$agent', '$project', '$body');"
+    ;;
+  knowledge)
+    sqlite3 "$CORTEX_DB" "INSERT INTO knowledge(agent_name, project, title, body) VALUES ('$agent', '$project', substr('$body', 1, 80), '$body');"
+    ;;
+  *)
+    echo "Unknown event type: $event_type" >&2
+    exit 1
+    ;;
+esac
+
+echo "logged $event_type: $summary"

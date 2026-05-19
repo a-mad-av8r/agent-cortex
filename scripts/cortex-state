@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/_cortex_lib.sh
+source "$SCRIPT_DIR/_cortex_lib.sh"
+require_db
+
+sqlite3 -header -column "$CORTEX_DB" "
+SELECT 'agents' AS table_name, count(*) AS rows FROM agents
+UNION ALL SELECT 'sessions', count(*) FROM agent_sessions
+UNION ALL SELECT 'messages', count(*) FROM messages
+UNION ALL SELECT 'decisions', count(*) FROM decisions
+UNION ALL SELECT 'lessons', count(*) FROM lessons
+UNION ALL SELECT 'knowledge', count(*) FROM knowledge;
+"
